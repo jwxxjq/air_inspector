@@ -36,15 +36,15 @@ STEPS:
 
 1. write fig data into flash
 
-  1.1. prepare figx.png (must be 240*320)
+  A. prepare figx.png (must be 240*320)
   
-  1.2. edit host_pc_script/trans_png_bt_bin.py
+  B. edit host_pc_script/trans_png_bt_bin.py
   
     a. update file name @ line 6
     
     b. excute this script, then get figx.bin
     
-  1.3. edit host_pc_script/uart_write.py
+  C. edit host_pc_script/uart_write.py
   
     a. fig name @ line 9
     
@@ -54,7 +54,7 @@ STEPS:
     
     d. do not excute now
   
-  1.4. update uart_write_flash/uart_write_flash.ino
+  D. update uart_write_flash/uart_write_flash.ino
   
     a. BAUD_TATE @ line 6
     
@@ -66,9 +66,9 @@ STEPS:
     
     e. then excute host_pc_script/uart_write.py, wait all lines finish
     
-  1.5. if checksum error happens, may need to slow down the baud rate
+  E. if checksum error happens, may need to slow down the baud rate
   
-  1.6. change to next fig, repeat 1.1 ~ 1.5
+  F. change to next fig, repeat 1.1 ~ 1.5
   
 2. test display fig
 
