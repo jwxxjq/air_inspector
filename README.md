@@ -4,32 +4,32 @@ indoor air quility inspector for PM2.5/PM10/CO2/TVOC/HCOH/TEMP/RH
 
 hardware:
 
-main Sensor: TW70ST
+    main Sensor: TW70ST
 
-mcu: ATmega328P (running Arduino)
+    mcu: ATmega328P (running Arduino)
 
-displayer: 320*240 ILI9341
+    displayer: 320*240 ILI9341
 
-flash: W25Q16JVSSIG
+    flash: W25Q16JVSSIG
 
-Sensor 2: DHT11
+    Sensor 2: DHT11
 
-wifi connector: ESP8266
+    wifi connector: ESP8266
 
 
 lib necessary:
 
-python:
+    python:
 
-  serial
+        serial
   
-  matplotlib
+        matplotlib
   
-Arduino:
+    Arduino:
 
-  SPIMemory
+        SPIMemory
   
-  Adafruit_ILI9341
+        Adafruit_ILI9341
 
 
 STEPS:
