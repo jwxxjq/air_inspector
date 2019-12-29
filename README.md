@@ -36,39 +36,39 @@ STEPS:
 
 1. write fig data into flash
 
-  A. prepare figx.png (must be 240*320)
+    A. prepare figx.png (must be 240*320)
   
-  B. edit host_pc_script/trans_png_bt_bin.py
+    B. edit host_pc_script/trans_png_bt_bin.py
   
-    a. update file name @ line 6
+        a. update file name @ line 6
     
-    b. excute this script, then get figx.bin
+        b. excute this script, then get figx.bin
     
-  C. edit host_pc_script/uart_write.py
+    C. edit host_pc_script/uart_write.py
   
-    a. fig name @ line 9
+        a. fig name @ line 9
     
-    b. COM port @ lien 25
+        b. COM port @ lien 25
     
-    c. baud rate @ line 27
+        c. baud rate @ line 27
     
-    d. do not excute now
+        d. do not excute now
   
-  D. update uart_write_flash/uart_write_flash.ino
+    D. update uart_write_flash/uart_write_flash.ino
   
-    a. BAUD_TATE @ line 6
+        a. BAUD_TATE @ line 6
     
-    b. FLASH cs pin @ line 7
+        b. FLASH cs pin @ line 7
     
-    c. update fig_addr @ lien 16
+        c. update fig_addr @ lien 16
     
-    d. load into MCU
+        d. load into MCU
     
-    e. then excute host_pc_script/uart_write.py, wait all lines finish
+        e. then excute host_pc_script/uart_write.py, wait all lines finish
     
-  E. if checksum error happens, may need to slow down the baud rate
+    E. if checksum error happens, may need to slow down the baud rate
   
-  F. change to next fig, repeat 1.1 ~ 1.5
+    F. change to next fig, repeat 1.1 ~ 1.5
   
 2. test display fig
 
