@@ -4,9 +4,13 @@ import time
 import struct
 import re
 
-total_line_number = 240
+total_fig_number = 1 # toatal fig number
+total_line_number = 240 # high of each fig
 write_byte_each_line = 640 # 320*2, each pixel occupy 2 bytes
-file_name = "fig3.bin"
+
+total_char_lib_line_number = 200
+write_char_lib_byte_each_line = 96 #80
+
 
 def caculate_sum(data):
     sum = 0
@@ -18,20 +22,61 @@ def caculate_sum(data):
     return sum_byte
 
 try:
-    file = open(file_name, 'rb')
-    byte_count = 0
-    line_count = 0
-    
     portx="COM7"
 #    bps=9600
-    bps=74880
+    bps=57600
     timex=5
     ser=serial.Serial(portx,bps,timeout=timex)
-    print ("open serial ok")
+    print ("oen serial ok")
 
-    while line_count < total_line_number:
+    fig_count = 0
+    while fig_count < total_fig_number:
         byte_count = 0
-        while byte_count < write_byte_each_line:
+        line_count = 0
+        fig_name_count = fig_count + 1
+        file_name = "fig"+str(fig_name_count)+".bin"
+        file = open(file_name, 'rb')
+        print ("fig start", fig_name_count);
+        while line_count < total_line_number:
+            byte_count = 0
+            while byte_count < write_byte_each_line:
+                str_string = file.read(32);
+                hex_string = str(binascii.b2a_hex(str_string))[2:-1]
+                #print (hex_string);
+                str_sum = caculate_sum(hex_string);
+                #print ("sum should be", str_sum)
+                if not str_string:
+                    break
+                ser.write(bytes().fromhex(hex_string))
+                while (1):
+                    if ser.in_waiting > 0:
+                        break
+                read_string = ord(ser.read(ser.in_waiting))
+                ser.reset_input_buffer();
+                #print (read_string)
+                if int(read_string) != str_sum:
+                    print ("error @ line", line_count)
+                    print ("sum should be", str_sum)
+                    print ("get number is", int(read_string))
+                    ser.close()
+                    exit
+                if not str_string:
+                    break
+                byte_count += 32
+            line_count += 1
+            if ((line_count %10) == 0):
+                print ("finish line", line_count)
+        file.close()
+        fig_count += 1
+
+    byte_count = 0
+    line_count = 0
+    file_name = "char_lib.bin"
+    file = open(file_name, 'rb')
+    print ("char lib start");
+    while line_count < total_char_lib_line_number:
+        byte_count = 0
+        while byte_count < write_char_lib_byte_each_line:
             str_string = file.read(32);
             hex_string = str(binascii.b2a_hex(str_string))[2:-1]
             #print (hex_string);
@@ -47,14 +92,19 @@ try:
             ser.reset_input_buffer();
             #print (read_string)
             if int(read_string) != str_sum:
-                print ("error")
+                print ("error @ line", line_count)
                 print ("sum should be", str_sum)
                 print ("get number is", int(read_string))
+                ser.close()
+                exit
             if not str_string:
                 break
             byte_count += 32
         line_count += 1
-        print ("finish line", line_count)
+        if ((line_count %10) == 0):
+            print ("finish line", line_count)
+    file.close()
+    
     ser.close()
     print ("end here")
 
