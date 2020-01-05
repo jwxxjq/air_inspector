@@ -3,6 +3,8 @@ import matplotlib.image as mpimg
 import numpy as np
 import struct
 
+#include "..\air_inspector\define.h"
+
 file_name = "fig1"
 
 fig1 = mpimg.imread(file_name+".png")

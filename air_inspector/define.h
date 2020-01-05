@@ -69,16 +69,25 @@
 
 //match char_lib.png
 #define char_lib_item_high 17 //height of each item and data
-#define char_lib_item_width_CO2 31
-#define char_lib_item_width_TVOC 45
-#define char_lib_item_width_CH2O 46
-#define char_lib_item_width_PM25 49
-#define char_lib_item_width_PM10 45
+//#define char_lib_item_width_CO2 31
+//#define char_lib_item_width_TVOC 45
+//#define char_lib_item_width_CH2O 46
+//#define char_lib_item_width_PM25 49
+//#define char_lib_item_width_PM10 45
+
+#define char_lib_item_width_CO2  50
+#define char_lib_item_width_TVOC 50
+#define char_lib_item_width_CH2O 50
+#define char_lib_item_width_PM25 50
+#define char_lib_item_width_PM10 50
 
 #define char_lib_unit_ug_m_width 50
-#define char_lib_unit_ppm_width
-#define char_lib_unit_C_width 18
-#define char_lib_unit_percent_width 17
+#define char_lib_unit_ppm_width 32
+//#define char_lib_unit_C_width 18
+//#define char_lib_unit_percent_width 17
+
+#define char_lib_unit_C_width       20
+#define char_lib_unit_percent_width 20
 
 #define char_lib_num_width 10
 
