@@ -6,8 +6,8 @@
 #define TRANS_BAUD_RATE 57600 //for softSerial
 #define FLASH_CS 4 //define cs pin of flash
 //#define fig_byte_number fig_high*fig_width*2 //r5g6b5, each pixel occupy 2 byte, 153600 bytes for 240*320*2
-#define fig_byte_number 153600
-#define max_fig_number 1
+#define fig_byte_number 153664
+#define max_fig_number 10
 #define flash_max_size 0x200000 //2MB(16Mbit)
 #define flash_size_each_fig 0x30000 //192K > 153600
 
