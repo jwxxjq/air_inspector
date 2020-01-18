@@ -95,6 +95,21 @@ void update_one_fig(uint8_t fig_num){
 void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value){
   uint16_t position_x = 0;
   uint16_t position_y = 0;
+  bool is_blod = true;
+  
+//  uint8_t display_color_R = char_lib_color_green_R;
+//  uint8_t display_color_G = char_lib_color_green_G;
+//  uint8_t display_color_B = char_lib_color_green_B;
+  uint8_t display_color_R = char_lib_color_red_R;
+  uint8_t display_color_G = char_lib_color_red_G;
+  uint8_t display_color_B = char_lib_color_red_B;
+
+/*  need to update later for blod size number & color
+  switch item_count:
+    case item_number_CO2:
+    
+*/
+
 
   uint32_t flash_addr = 0;
   flash_addr = flash_max_size - flash_size_each_fig * (fig_num+1) + fig_pic_byte_number + 4 * item_count;
@@ -103,10 +118,100 @@ void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value){
   
   flash.readByteArray(flash_addr,     (uint8_t*)(&position_x), 2);
   flash.readByteArray(flash_addr + 2, (uint8_t*)(&position_y), 2);
-//  Serial.println(position_x);
-//  Serial.println(position_y);
+  Serial.println(position_x);
+  Serial.println(position_y);
 
-}  
+  update_one_number(fig_num, 0, position_x, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+}
+
+/**************************************************************************/
+/*!
+    @brief  update one number
+    @param  fig_num     current fig number
+    @param  value       one number to display (0~9)
+    @param  position_x  display area position x
+    @param  position_y  display area position y
+    @param  display_color_R  color R channel (0~31)
+    @param  display_color_G  color G channel (0~63)
+    @param  display_color_B  color B channel (0~31)
+    @param  is_blod     0: nromal; 1: blod
+*/
+/**************************************************************************/
+void update_one_number(uint8_t fig_num, uint8_t value, uint16_t position_x, uint16_t position_y, uint8_t display_color_R, uint8_t display_color_G, uint8_t display_color_B, bool is_blod){
+  uint32_t org_flash_start_addr = flash_max_size - flash_size_each_fig * (fig_num+1);
+  uint32_t org_flash_x_start_addr = org_flash_start_addr + (position_y * fig_width + position_x) * 2; //offset caculate
+  
+//  uint32_t number_lib_flash_start_addr = char_lib_start_addr;
+  uint32_t number_lib_flash_x_start_addr = char_lib_start_addr;
+  if (is_blod){
+    number_lib_flash_x_start_addr += char_lib_number_bold_start_width;
+  }
+  else{
+    number_lib_flash_x_start_addr += char_lib_number_normal_start_width;
+  }
+  number_lib_flash_x_start_addr += char_lib_number_high*value;
+  
+  for (uint8_t y_count = 0; y_count < char_lib_number_high; y_count ++){ //foreach line
+    uint16_t org_color[char_lib_number_width]; //orginal fig is 16-bit each pixel
+    uint8_t number_color[char_lib_number_width]; //number lib is 8-bit each pixel
+    uint16_t mix_color[char_lib_number_width];
+    
+    flash.readByteArray(org_flash_x_start_addr + y_count*fig_width*2, (uint8_t*)(&org_color), char_lib_number_width*2); //read orginal data into org_color[]
+    flash.readByteArray(number_lib_flash_x_start_addr + y_count*char_lib_width, (uint8_t*)(&number_color), char_lib_number_width); //read number lib to number_color
+    
+    for (uint8_t x_count = 0; x_count < char_lib_number_width; x_count ++){ //foreach pixel
+      mix_color[x_count] = mix_pixel_color(org_color[x_count], number_color[x_count], display_color_R, display_color_G, display_color_B); //caculate each pixel
+    }
+    
+    tft.drawRGBBitmap(
+		  position_x,
+		  position_y + y_count,
+		  mix_color,
+		  char_lib_number_width,
+		  1
+    );
+  }
+}
+
+/**************************************************************************/
+/*!
+    @brief  mix pixel color
+    @param  org_color   orginal fig uint16_t color
+    @param  lib_alpha   lib color alpha (0-31)
+    @param  display_color_R  display color R channel
+    @param  display_color_G  display color G channel
+    @param  display_color_B  display color B channel
+*/
+/**************************************************************************/
+uint16_t mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, uint8_t display_color_R, uint8_t display_color_G, uint8_t display_color_B){
+  uint16_t result = org_color;
+  
+  if (lib_alpha == 0){
+    return result; //if lib alpha is 0, then return orginal color
+  }
+  if (lib_alpha == 31){
+    result = (display_color_R << 11) + (display_color_G << 5) + (display_color_B);
+    return result; //if lib alpha is 31, then return full display color
+  }
+  
+  //else caculate
+  uint8_t R_color = (org_color >> 11) & 31;
+  uint8_t G_color = (org_color >> 5) & 63;
+  uint8_t B_color = (org_color) & 31;
+  
+  uint32_t temp;
+  temp = (R_color * (31 - lib_alpha) + display_color_R * lib_alpha) / 31;
+  R_color = uint8_t(temp);
+ 
+  temp = (G_color * (63 - lib_alpha) + display_color_G * lib_alpha) / 63;
+  G_color = uint8_t(temp);
+
+  temp = (B_color * (31 - lib_alpha) + display_color_B * lib_alpha) / 31;
+  B_color = uint8_t(temp);
+
+  result = (R_color << 11) + (G_color << 5) + (B_color);
+  return result;
+}
 
 ///**************************************************************************/
 ///*!
