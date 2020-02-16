@@ -36,25 +36,27 @@ STEPS:
 
 1. write fig data into flash
 
-    A. prepare figx.png (must be 240*320)
+    A. prepare figx.png (must be 240*320), x start with 0
   
-    B. edit host_pc_script/trans_png_bt_bin.py
+    B. edit host_pc_script/trans_png_to_bin.py
   
-        a. update file name @ line 6
+        a. update file name @ line 8
+        
+        b. edit default value for display area @ line 62 if needed
     
         b. excute this script, then get figx.bin
     
     C. edit host_pc_script/uart_write.py
   
-        a. fig name @ line 9
+        a. fig name @ line 7
     
         b. COM port @ lien 25
     
         c. baud rate @ line 27
     
-        d. do not excute now
+        d. do not excute right now
   
-    D. update uart_write_flash/uart_write_flash.ino
+    D. edit uart_write_flash/uart_write_flash.ino
   
         a. BAUD_TATE @ line 6
     
@@ -68,9 +70,9 @@ STEPS:
     
     E. if checksum error happens, may need to slow down the baud rate
   
-    F. change to next fig, repeat 1.1 ~ 1.5
-  
+ 
 2. test display fig
 
-  on-going
-  
+    A. load air_inspector/air_inspector.ino to MCU
+    
+    B. should display figs in turns with the values of every test items update and refrush randomly.
