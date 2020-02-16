@@ -36,11 +36,36 @@
 #define item_number_TEMP 5
 #define item_number_RH 6
 
+//item limit
+#define item_stage_CO2_1 800   // <800PPM is green
+#define item_stage_CO2_2 1200  // 800-1200 is yellow; > 1200 is red
+
+#define item_stage_TVOC_1 300  // <300 ug/m^3 is green
+#define item_stage_TVOC_2 500  // 300-500 is yellow; > 500 is red
+
+#define item_stage_CH2O_1 50 // <50 ug/m^3 is green
+#define item_stage_CH2O_2 80 // 50-80 is yellow; > 80 is red
+
+#define item_stage_PM25_1 35 // <35 ug/m^3 is green
+#define item_stage_PM25_2 75 // 35-75 is yellow; > 75 is red
+
+#define item_stage_PM10_1 40 // <40 ug/m^3 is green
+#define item_stage_PM10_2 80 // 40-80 is yellow; > 80 is red
+
+#define item_stage_TEMP_1 1500 // <15 is blue
+#define item_stage_TEMP_2 2800 // 15-28 is green
+#define item_stage_TEMP_3 3500 // 28-35 is yellow; > 35 is red
+
+#define item_stage_RH_1 4000 // <40 is yellow
+#define item_stage_RH_2 8000 // 40-80 is green; > 80 is blue
+
 //char lib positive
 //#define char_lib_each_high 20
 //#define char_lib_each_width 50
 #define char_lib_number_width 10
 #define char_lib_number_high 20
+#define char_lib_number_radix_size 2
+#define char_lib_number_radix_shift_dize 4
 
 //#define char_lib_CO2_start_width  0
 //#define char_lib_CO2_start_high  (char_lib_each_high*item_number_CO2)
@@ -99,13 +124,17 @@
 #define char_lib_color_green_G 61
 #define char_lib_color_green_B 0
 
-#define char_lib_color_yellow_R 15
-#define char_lib_color_yellow_G 31
+#define char_lib_color_yellow_R 31
+#define char_lib_color_yellow_G 63
 #define char_lib_color_yellow_B 0
 
 #define char_lib_color_red_R 31
 #define char_lib_color_red_G 0
 #define char_lib_color_red_B 0
+
+#define char_lib_color_blue_R 0
+#define char_lib_color_blue_G 0
+#define char_lib_color_blue_B 31
 
 //flash buffer addr
 //display each item need 8k(90*20*2*2=7200) (or 4k for TEMP/RH = 50*20*2) bytes buffer, total 8k*5 + 4k*2 = 48k

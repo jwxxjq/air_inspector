@@ -1,4 +1,5 @@
 #include "define.h"
+#include "stdlib.h"
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 SPIFlash flash(FLASH_CS);
@@ -21,8 +22,22 @@ void loop() {
 //      for (uint8_t item_count = 0; item_count < item_number_total; item_count ++){
 //        update_item_value(i, item_count, 0);
 //      }
-      update_item_value(i, 0, 0);
-      while(1);
+      update_item_value(i, 0, random(2000));
+      update_item_value(i, 1, random(800));
+      update_item_value(i, 2, random(100));
+      update_item_value(i, 3, random(100));
+      update_item_value(i, 4, random(100));
+      update_item_value(i, 5, random(4000));
+      update_item_value(i, 6, random(10000));
+      //while(1);
+      delay(3000);
+      update_item_value(i, 0, random(2000));
+      update_item_value(i, 1, random(800));
+      update_item_value(i, 2, random(100));
+      update_item_value(i, 3, random(100));
+      update_item_value(i, 4, random(100));
+      update_item_value(i, 5, random(4000));
+      update_item_value(i, 6, random(10000));
       delay(3000);
       tft.fillScreen(ILI9341_BLACK);
     }
@@ -90,27 +105,158 @@ void update_one_fig(uint8_t fig_num){
     @param  fig_num     current fig number
     @param  item_count  the item_num that need to update with
     @param  value       the item value
+    
+    @return 0: success; 1: value over flow
 */
 /**************************************************************************/
-void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value){
+uint8_t update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value){
   uint16_t position_x = 0;
   uint16_t position_y = 0;
-  bool is_blod = true;
   
-//  uint8_t display_color_R = char_lib_color_green_R;
-//  uint8_t display_color_G = char_lib_color_green_G;
-//  uint8_t display_color_B = char_lib_color_green_B;
-  uint8_t display_color_R = char_lib_color_red_R;
-  uint8_t display_color_G = char_lib_color_red_G;
-  uint8_t display_color_B = char_lib_color_red_B;
+  bool is_blod = false;
 
-/*  need to update later for blod size number & color
-  switch item_count:
+  //for color
+  bool is_red = false;
+  bool is_green = false;
+  bool is_blue = false;
+  bool is_yellow = false;
+
+  //default color is green
+  uint8_t display_color_R = char_lib_color_green_R;
+  uint8_t display_color_G = char_lib_color_green_G;
+  uint8_t display_color_B = char_lib_color_green_B;
+
+//for blod size number & color
+  switch (item_count){
     case item_number_CO2:
-    
-*/
+      if (value < item_stage_CO2_1){
+        is_green = true;
+        is_blod = true;
+      }
+      else if (value < item_stage_CO2_2){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else{
+        is_red = true;
+        is_blod = true;
+      }
+      break;
+    case item_number_TVOC:
+      if (value < item_stage_TVOC_1){
+        is_green = true;
+        is_blod = false;
+      }
+      else if (value < item_stage_TVOC_2){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else{
+        is_red = true;
+        is_blod = true;
+      }
+      break;
+    case item_number_CH2O:
+      if (value < item_stage_CH2O_1){
+        is_green = true;
+        is_blod = false;
+      }
+      else if (value < item_stage_CH2O_2){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else {
+        is_red = true;
+        is_blod = true;
+      }
+      break;
+    case item_number_PM25:
+      if (value < item_stage_PM25_1){
+        is_green = true;
+        is_blod = false;
+      }
+      else if (value < item_stage_PM25_2){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else {
+        is_red = true;
+        is_blod = true;
+      }
+      break;
+    case item_number_PM10:
+      if (value < item_stage_PM10_1){
+        is_green = true;
+        is_blod = false;
+      }
+      else if (value < item_stage_PM10_2){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else {
+        is_red = true;
+        is_blod = true;
+      }
+      break;
+    case item_number_TEMP:
+      if (value < item_stage_TEMP_1){
+        is_blue = true;
+        is_blod = true;
+      }
+      else if (value < item_stage_TEMP_2){
+        is_green = true;
+        is_blod = false;
+      }
+      else if (value < item_stage_TEMP_3){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else {
+        is_red = true;
+        is_blod = true;
+      }
+      break;
+    case item_number_RH:
+      if (value < item_stage_RH_1){
+        is_yellow = true;
+        is_blod = false;
+      }
+      else if (value < item_stage_RH_2){
+        is_green = true;
+        is_blod = false;
+      }
+      else {
+        is_blue = true;
+        is_blod = false;
+      }
+      break;
+    default:
+      is_green = true;
+      is_blod = false;
+      break;
+  }
+  if(is_green){
+    display_color_R = char_lib_color_green_R;
+    display_color_G = char_lib_color_green_G;
+    display_color_B = char_lib_color_green_B;
+  }
+  else if (is_yellow){
+    display_color_R = char_lib_color_yellow_R;
+    display_color_G = char_lib_color_yellow_G;
+    display_color_B = char_lib_color_yellow_B;
+  }
+  else if (is_red){
+    display_color_R = char_lib_color_red_R;
+    display_color_G = char_lib_color_red_G;
+    display_color_B = char_lib_color_red_B;
+  }
+  else if (is_blue){
+    display_color_R = char_lib_color_blue_R;
+    display_color_G = char_lib_color_blue_G;
+    display_color_B = char_lib_color_blue_B;
+  }
 
-
+  //calculate display position
   uint32_t flash_addr = 0;
   flash_addr = flash_max_size - flash_size_each_fig * (fig_num+1) + fig_pic_byte_number + 4 * item_count;
   //Serial.print("flash addr = ");
@@ -118,10 +264,128 @@ void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value){
   
   flash.readByteArray(flash_addr,     (uint8_t*)(&position_x), 2);
   flash.readByteArray(flash_addr + 2, (uint8_t*)(&position_y), 2);
-  Serial.println(position_x);
-  Serial.println(position_y);
+//  Serial.println(position_x);
+//  Serial.println(position_y);
 
-  update_one_number(fig_num, 0, position_x, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+  //calculate each number
+  uint8_t display_number[4];
+  bool find_first_non_zero_bit = false;
+  display_number[3] = (value / 1000) % 10;
+  display_number[2] = (value / 100) % 10;
+  display_number[1] = (value / 10) % 10;
+  display_number[0] = (value) % 10;
+  
+  uint16_t position_x_this_bit = position_x;
+  
+  if (item_count == item_number_TEMP || item_count == item_number_RH){ // 2 bits int + 1 radix
+    if (display_number[3] != 0){
+      update_one_number(fig_num, display_number[3], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+      find_first_non_zero_bit = true;
+    }
+    else{
+      clear_one_number(fig_num, position_x_this_bit, position_y);
+    }
+    position_x_this_bit += char_lib_number_width;
+    
+    update_one_number(fig_num, display_number[2], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+    position_x_this_bit += char_lib_number_width;
+    
+    draw_decimal_point(fig_num, position_x_this_bit + 1, position_y + char_lib_number_high - 8, display_color_R, display_color_G, display_color_B);
+
+    position_x_this_bit += char_lib_number_radix_shift_dize;
+    
+    update_one_number(fig_num, display_number[1], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+    
+  }
+  else { // 4 bits int value
+    if (display_number[3] != 0){
+      update_one_number(fig_num, display_number[3], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+      find_first_non_zero_bit = true;
+    }
+    else{
+      clear_one_number(fig_num, position_x_this_bit, position_y);
+    }
+    position_x_this_bit += char_lib_number_width;
+    
+    if (display_number[2] != 0 || find_first_non_zero_bit == true){
+      update_one_number(fig_num, display_number[2], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+      find_first_non_zero_bit = true;
+    }
+    else {
+      clear_one_number(fig_num, position_x_this_bit, position_y);
+    }
+    position_x_this_bit += char_lib_number_width;
+    
+    if (display_number[1] != 0 || find_first_non_zero_bit == true){
+      update_one_number(fig_num, display_number[1], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+      find_first_non_zero_bit = true;
+    }
+    else {
+      clear_one_number(fig_num, position_x_this_bit, position_y);
+    }
+    position_x_this_bit += char_lib_number_width;
+
+    update_one_number(fig_num, display_number[0], position_x_this_bit, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+  }
+
+//  update_one_number(fig_num, 0, position_x, position_y, display_color_R, display_color_G, display_color_B, is_blod);
+}
+
+/**************************************************************************/
+/*!
+    @brief  clear number display area with orginal fig
+    @param  fig_num     current fig number
+    @param  position_x  display area position x
+    @param  position_y  display area position y
+*/
+/**************************************************************************/
+void clear_one_number(uint8_t fig_num, uint16_t position_x, uint16_t position_y){
+  uint32_t org_flash_start_addr = flash_max_size - (uint32_t)flash_size_each_fig * (fig_num+1);
+  uint32_t org_flash_x_start_addr = org_flash_start_addr + ((uint32_t)fig_width * position_y + position_x) * 2; //offset caculate
+  uint16_t org_color[char_lib_number_width]; //orginal fig is 16-bit each pixel
+  
+  for (uint8_t y_count = 0; y_count < char_lib_number_high; y_count ++){ //foreach line
+    flash.readByteArray(org_flash_x_start_addr + y_count*fig_width*2, (uint8_t*)(&org_color), char_lib_number_width*2); //read orginal data into org_color[]
+    tft.drawRGBBitmap(
+		  position_x,
+		  position_y + y_count,
+		  org_color,
+		  char_lib_number_width,
+		  1
+    );
+  }
+}
+
+/**************************************************************************/
+/*!
+    @brief  dram a radix point at position
+    @param  fig_num     current fig number
+    @param  position_x  display area position x
+    @param  position_y  display area position y
+    @param  display_color_R  color R channel (0~31)
+    @param  display_color_G  color G channel (0~63)
+    @param  display_color_B  color B channel (0~31)
+*/
+/**************************************************************************/
+void draw_decimal_point(uint8_t fig_num, uint16_t position_x, uint16_t position_y, uint8_t display_color_R, uint8_t display_color_G, uint8_t display_color_B){
+  uint32_t org_flash_start_addr = flash_max_size - (uint32_t)flash_size_each_fig * (fig_num+1);
+  uint32_t org_flash_x_start_addr = org_flash_start_addr + ((uint32_t)fig_width * position_y + position_x) * 2; //offset caculate
+
+  for (uint8_t y_count = 0; y_count < char_lib_number_radix_size; y_count ++){ //foreach line
+    uint16_t mix_color[2];
+    
+    for (uint8_t x_count = 0; x_count < char_lib_number_radix_size; x_count ++){ //foreach pixel
+      mix_color[x_count] = mix_pixel_color(0x0000, 255, display_color_R, display_color_G, display_color_B); //caculate each pixel
+    }
+    
+    tft.drawRGBBitmap(
+		  position_x,
+		  position_y + y_count,
+		  mix_color,
+		  char_lib_number_radix_size,
+		  1
+    );
+  }
 }
 
 /**************************************************************************/
@@ -138,9 +402,9 @@ void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value){
 */
 /**************************************************************************/
 void update_one_number(uint8_t fig_num, uint8_t value, uint16_t position_x, uint16_t position_y, uint8_t display_color_R, uint8_t display_color_G, uint8_t display_color_B, bool is_blod){
-  uint32_t org_flash_start_addr = flash_max_size - flash_size_each_fig * (fig_num+1);
-  uint32_t org_flash_x_start_addr = org_flash_start_addr + (position_y * fig_width + position_x) * 2; //offset caculate
-  
+  uint32_t org_flash_start_addr = flash_max_size - (uint32_t)flash_size_each_fig * (fig_num+1);
+  uint32_t org_flash_x_start_addr = org_flash_start_addr + ((uint32_t)fig_width * position_y + position_x) * 2; //offset caculate
+
 //  uint32_t number_lib_flash_start_addr = char_lib_start_addr;
   uint32_t number_lib_flash_x_start_addr = char_lib_start_addr;
   if (is_blod){
@@ -149,7 +413,7 @@ void update_one_number(uint8_t fig_num, uint8_t value, uint16_t position_x, uint
   else{
     number_lib_flash_x_start_addr += char_lib_number_normal_start_width;
   }
-  number_lib_flash_x_start_addr += char_lib_number_high*value;
+  number_lib_flash_x_start_addr += char_lib_number_high*value*char_lib_width;
   
   for (uint8_t y_count = 0; y_count < char_lib_number_high; y_count ++){ //foreach line
     uint16_t org_color[char_lib_number_width]; //orginal fig is 16-bit each pixel
@@ -157,10 +421,15 @@ void update_one_number(uint8_t fig_num, uint8_t value, uint16_t position_x, uint
     uint16_t mix_color[char_lib_number_width];
     
     flash.readByteArray(org_flash_x_start_addr + y_count*fig_width*2, (uint8_t*)(&org_color), char_lib_number_width*2); //read orginal data into org_color[]
-    flash.readByteArray(number_lib_flash_x_start_addr + y_count*char_lib_width, (uint8_t*)(&number_color), char_lib_number_width); //read number lib to number_color
-    
+    flash.readByteArray(number_lib_flash_x_start_addr + ((uint32_t)y_count)*char_lib_width, (uint8_t*)(&number_color), char_lib_number_width); //read number lib to number_color
+    //Serial.println(number_lib_flash_x_start_addr);
+    //while(1);
     for (uint8_t x_count = 0; x_count < char_lib_number_width; x_count ++){ //foreach pixel
       mix_color[x_count] = mix_pixel_color(org_color[x_count], number_color[x_count], display_color_R, display_color_G, display_color_B); //caculate each pixel
+//      Serial.println("org:");
+//      Serial.println(org_color[x_count]);
+//      Serial.println("mix:");
+//      Serial.println(mix_color[x_count]);
     }
     
     tft.drawRGBBitmap(
@@ -186,6 +455,14 @@ void update_one_number(uint8_t fig_num, uint8_t value, uint16_t position_x, uint
 uint16_t mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, uint8_t display_color_R, uint8_t display_color_G, uint8_t display_color_B){
   uint16_t result = org_color;
   
+//  Serial.println("orginal color = ");
+//  Serial.println(org_color);
+//  
+//  Serial.println("lib_alpha = ");
+//  Serial.println(lib_alpha);
+//  
+//  while(1);  
+  
   if (lib_alpha == 0){
     return result; //if lib alpha is 0, then return orginal color
   }
@@ -210,6 +487,7 @@ uint16_t mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, uint8_t display_
   B_color = uint8_t(temp);
 
   result = (R_color << 11) + (G_color << 5) + (B_color);
+  
   return result;
 }
 
@@ -347,7 +625,7 @@ uint16_t mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, uint8_t display_
 //          //Serial.print("write_addr: "); Serial.println(flash_addr_rev_pixel);
 //        }
 //        else{
-//          Serial.print("need to calcute @ "); Serial.println(pixel_count);
+//          Serial.print("need to calculate @ "); Serial.println(pixel_count);
 //          Serial.println(flash.readByte(flash_addr_org_piexl + 1)); Serial.println(flash.readByte(flash_addr_org_piexl));
 //          while(1);
 //        }
