@@ -5,12 +5,17 @@
 #include <SPIMemory.h>
 #include <Adafruit_ILI9341.h>
 #include <SPI.h>
+#include "TW07ST.h"
+#include <FlexiTimer2.h>
 
 //Arduino peri define
 #define BAUD_RATE 9600 //for serial.print
 #define FLASH_CS 4 //define cs pin of flash
 #define TFT_DC 9 //TFT DC pin
 #define TFT_CS 10 //TFT CS pin
+
+//fig fresh rate
+#define time_each_fig_ms 60000 //30*60*1000ms
 
 //flash addr part
 #define fig_width 320
