@@ -10,7 +10,7 @@ void setup() {
   // put your setup code here, to run once:
   //display related
   tft.begin();
-  tft.setRotation(3);
+  tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
 
   //flash init

@@ -4,3 +4,10 @@
 .svn/format
 .svn/entries
 .svn/*
+
+air_inspector/.pio
+air_inspector/.vscode/
+air_inspector/.gitignore
+air_inspector/.travis.yml
+
+*.psd
