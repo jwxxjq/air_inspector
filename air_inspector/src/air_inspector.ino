@@ -4,6 +4,7 @@
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 SPIFlash flash(FLASH_CS);
 TW07ST u_TW07ST;
+SERSOR_SERIAL u_SERSOR_SERIAL(3,2);
 bool flag_to_update_fig;
 
 void setup() {
@@ -19,7 +20,7 @@ void setup() {
   //sensor init
   u_TW07ST.init();
 //  Serial.begin(9600); //TW07ST will init serial
-  
+
   //set timer to update backgroud fig
   flag_to_update_fig = false;
   FlexiTimer2::set(time_each_fig_ms, 1.0/1000, set_update_fig_flag);
@@ -54,6 +55,7 @@ void loop() {
           update_item_value(i, item_number_RH,   u_TW07ST.RH_value*10);
           //Serial.println("update sensor value done");
           //Serial.println(u_TW07ST.TEMP_value);
+          u_SERSOR_SERIAL.print_value(u_TW07ST.PM25_value, u_TW07ST.PM10_value, u_TW07ST.CO2_value, u_TW07ST.CH2O_value, u_TW07ST.TEMP_value, u_TW07ST.RH_value);
         }
       }
       flag_to_update_fig = false;
@@ -62,7 +64,7 @@ void loop() {
   }
 }
 
-bool set_update_fig_flag(){
+void set_update_fig_flag(){
   //Serial.print("print message: Called at: ");
   //Serial.println(millis());
   //Serial.println("update one fig");

@@ -7,6 +7,7 @@
 #include <SPI.h>
 #include "TW07ST.h"
 #include <FlexiTimer2.h>
+#include "SENSOR_SERIAL.h"
 
 //Arduino peri define
 #define BAUD_RATE 9600 //for serial.print
