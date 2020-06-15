@@ -19,7 +19,6 @@ void display_flash::init(){
   flash.begin();
 }
 
-
 /**************************************************************************/
 /*!
     @brief  update one fig with the data in flash
@@ -592,6 +591,28 @@ uint16_t display_flash::mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, u
 //
 //}
 
+/**************************************************************************/
+/*!
+    @brief  read flash
+    @param  start_addr     start address
+    @param  byte_array     the data array to fill into
+    @param  length         total length in byte
+*/
+/**************************************************************************/
+void display_flash::read_bytes_from_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length){
+  flash.readByteArray(start_addr, byte_array, length);
+}
+
+/**************************************************************************/
+/*!
+    @brief  read flash
+    @param  start_addr     start address
+    @return byte value
+*/
+/**************************************************************************/
+uint8_t display_flash::read_one_byte_from_flash(uint32_t start_addr){
+  return flash.readByte(start_addr);
+}
 
 /**************************************************************************/
 /*!
@@ -642,3 +663,4 @@ bool display_flash::erase_flash(uint32_t start_addr, uint32_t length){
   }
   return result;
 }
+

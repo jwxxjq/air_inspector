@@ -197,6 +197,8 @@ class display_flash {
     void init();
     void update_one_fig(uint8_t fig_num);
     void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value);
+    void read_bytes_from_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length);
+    uint8_t read_one_byte_from_flash(uint32_t start_addr);
   private:
     SPIFlash flash = SPIFlash(FLASH_CS_PIN);
     Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
