@@ -32,6 +32,18 @@ void loop() {
     for (uint8_t i = 0; i < max_fig_number; i++){
       Serial.print("fig");
       Serial.println(i);
+//      uint8_t data[2] = {0,0};
+//      u_display_flash.write_bytes_to_flash(1022, data, 2);
+//      Serial.println(u_display_flash.read_one_byte_from_flash(1023));
+
+//      uint8_t data = u_display_flash.read_one_byte_from_flash(1023);
+//      Serial.print("current data = ");
+//      Serial.println(data);
+//      data += 1;
+//      u_display_flash.write_bytes_to_flash(1023, &data, 1);
+//      Serial.print("write data = ");
+//      Serial.println(u_display_flash.read_one_byte_from_flash(1023));
+//      while(1);
 
       u_display_flash.update_one_fig(i);
       //set default to all-zeros

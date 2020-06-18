@@ -11,6 +11,6 @@
 #define BAUD_RATE 9600 //for serial.print
 
 //fig fresh rate
-#define time_each_fig_ms 60000 //30*60*1000ms
+#define time_each_fig_ms 10000 //30*60*1000ms
 
 #endif

@@ -30,10 +30,10 @@ void display_flash::update_one_fig(uint8_t fig_num){
   uint32_t start_addr = flash_max_size - flash_size_each_fig*(fig_num+1);
   uint32_t offset = 0;
 
-//  DEBUG_PRINT ("fig ");
-//  DEBUG_PRINT (fig_num);
-//  DEBUG_PRINT (" start_addr = ");
-//  DEBUG_PRINTLN (start_addr);
+//  DISPLAY_FLASH_DEBUG_PRINT ("fig ");
+//  DISPLAY_FLASH_DEBUG_PRINT (fig_num);
+//  DISPLAY_FLASH_DEBUG_PRINT (" start_addr = ");
+//  DISPLAY_FLASH_DEBUG_PRINTLN (start_addr);
 
   for(uint32_t line_count = 0; line_count < fig_high; line_count++){
     uint16_t data[fig_width];
@@ -47,7 +47,7 @@ void display_flash::update_one_fig(uint8_t fig_num){
     );
     offset += fig_width*2;
   }
-//  DEBUG_PRINTLN("end");
+//  DISPLAY_FLASH_DEBUG_PRINTLN("end");
 }
 
 /**************************************************************************/
@@ -210,13 +210,13 @@ void display_flash::update_item_value(uint8_t fig_num, uint8_t item_count, uint1
   //calculate display position
   uint32_t flash_addr = 0;
   flash_addr = flash_max_size - flash_size_each_fig * (fig_num+1) + fig_pic_byte_number + 4 * item_count;
-  //DEBUG_PRINT("flash addr = ");
-  //DEBUG_PRINTLN(flash_addr);
+  //DISPLAY_FLASH_DEBUG_PRINT("flash addr = ");
+  //DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr);
   
   flash.readByteArray(flash_addr,     (uint8_t*)(&position_x), 2);
   flash.readByteArray(flash_addr + 2, (uint8_t*)(&position_y), 2);
-//  DEBUG_PRINTLN(position_x);
-//  DEBUG_PRINTLN(position_y);
+//  DISPLAY_FLASH_DEBUG_PRINTLN(position_x);
+//  DISPLAY_FLASH_DEBUG_PRINTLN(position_y);
 
   //calculate each number
   uint8_t display_number[4];
@@ -373,14 +373,14 @@ void display_flash::update_one_number(uint8_t fig_num, uint8_t value, uint16_t p
     
     flash.readByteArray(org_flash_x_start_addr + y_count*fig_width*2, (uint8_t*)(&org_color), char_lib_number_width*2); //read orginal data into org_color[]
     flash.readByteArray(number_lib_flash_x_start_addr + ((uint32_t)y_count)*char_lib_width, (uint8_t*)(&number_color), char_lib_number_width); //read number lib to number_color
-    //DEBUG_PRINTLN(number_lib_flash_x_start_addr);
+    //DISPLAY_FLASH_DEBUG_PRINTLN(number_lib_flash_x_start_addr);
     //while(1);
     for (uint8_t x_count = 0; x_count < char_lib_number_width; x_count ++){ //foreach pixel
       mix_color[x_count] = mix_pixel_color(org_color[x_count], number_color[x_count], display_color_R, display_color_G, display_color_B); //caculate each pixel
-//      DEBUG_PRINTLN("org:");
-//      DEBUG_PRINTLN(org_color[x_count]);
-//      DEBUG_PRINTLN("mix:");
-//      DEBUG_PRINTLN(mix_color[x_count]);
+//      DISPLAY_FLASH_DEBUG_PRINTLN("org:");
+//      DISPLAY_FLASH_DEBUG_PRINTLN(org_color[x_count]);
+//      DISPLAY_FLASH_DEBUG_PRINTLN("mix:");
+//      DISPLAY_FLASH_DEBUG_PRINTLN(mix_color[x_count]);
     }
     
     tft.drawRGBBitmap(
@@ -406,11 +406,11 @@ void display_flash::update_one_number(uint8_t fig_num, uint8_t value, uint16_t p
 uint16_t display_flash::mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, uint8_t display_color_R, uint8_t display_color_G, uint8_t display_color_B){
   uint16_t result = org_color;
   
-//  DEBUG_PRINTLN("orginal color = ");
-//  DEBUG_PRINTLN(org_color);
+//  DISPLAY_FLASH_DEBUG_PRINTLN("orginal color = ");
+//  DISPLAY_FLASH_DEBUG_PRINTLN(org_color);
 //  
-//  DEBUG_PRINTLN("lib_alpha = ");
-//  DEBUG_PRINTLN(lib_alpha);
+//  DISPLAY_FLASH_DEBUG_PRINTLN("lib_alpha = ");
+//  DISPLAY_FLASH_DEBUG_PRINTLN(lib_alpha);
 //  
 //  while(1);  
   
@@ -511,15 +511,15 @@ uint16_t display_flash::mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, u
 //    default:
 //      break;
 //  }
-////  DEBUG_PRINT("item_number: "); DEBUG_PRINTLN(item_number);
-////  DEBUG_PRINT("item start_addr: "); DEBUG_PRINTLN(flash_offset);
-////  DEBUG_PRINT("item length: "); DEBUG_PRINTLN(flash_length);
-////  DEBUG_PRINT("item high: "); DEBUG_PRINTLN(high);
+////  DISPLAY_FLASH_DEBUG_PRINT("item_number: "); DISPLAY_FLASH_DEBUG_PRINTLN(item_number);
+////  DISPLAY_FLASH_DEBUG_PRINT("item start_addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_offset);
+////  DISPLAY_FLASH_DEBUG_PRINT("item length: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_length);
+////  DISPLAY_FLASH_DEBUG_PRINT("item high: "); DISPLAY_FLASH_DEBUG_PRINTLN(high);
 //  
 //  if ((item_number != item_number_TEMP) && (item_number != item_number_RH)){
 //    //this display item has two lines
-////    DEBUG_PRINT("item_number: "); DEBUG_PRINTLN(item_number);
-////    DEBUG_PRINT("offset: "); DEBUG_PRINTLN(flash_offset);
+////    DISPLAY_FLASH_DEBUG_PRINT("item_number: "); DISPLAY_FLASH_DEBUG_PRINTLN(item_number);
+////    DISPLAY_FLASH_DEBUG_PRINT("offset: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_offset);
 //    buffer_display_item_two_lines(x, y, width, high, flash_offset, fig_number);
 //  }
 //}
@@ -542,10 +542,10 @@ uint16_t display_flash::mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, u
 //  //uint16_t pixel_count = 0;
 //  uint32_t byte_count = 0;
 //  
-////  DEBUG_PRINT("fig_number: "); DEBUG_PRINTLN(fig_number);
-////  DEBUG_PRINT("y: "); DEBUG_PRINTLN(y);
-////  DEBUG_PRINT("fig addr: "); DEBUG_PRINTLN(flash_addr_org_fig_this_line_start);
-////  DEBUG_PRINT("write addr: "); DEBUG_PRINTLN(flash_addr_this_line_start);
+////  DISPLAY_FLASH_DEBUG_PRINT("fig_number: "); DISPLAY_FLASH_DEBUG_PRINTLN(fig_number);
+////  DISPLAY_FLASH_DEBUG_PRINT("y: "); DISPLAY_FLASH_DEBUG_PRINTLN(y);
+////  DISPLAY_FLASH_DEBUG_PRINT("fig addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr_org_fig_this_line_start);
+////  DISPLAY_FLASH_DEBUG_PRINT("write addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr_this_line_start);
 //  
 //  //first two lines for round corner
 ////  flash.writeByte(flash_addr_this_line_start,flash.readByte(flash_addr_org_fig_this_line_start));
@@ -564,20 +564,20 @@ uint16_t display_flash::mix_pixel_color(uint16_t org_color, uint8_t lib_alpha, u
 //        if (pixel_count + line_count < 2){ //just copy three pixel data
 //          flash.writeByte(flash_addr_rev_pixel, flash.readByte(flash_addr_org_piexl));
 //          flash.writeByte(flash_addr_rev_pixel + 1, flash.readByte(flash_addr_org_piexl + 1));
-//          //DEBUG_PRINT("copy pixel data @ "); DEBUG_PRINTLN(pixel_count);
-//          //DEBUG_PRINT("read_addr: "); DEBUG_PRINTLN(flash_addr_org_piexl);
-//          //DEBUG_PRINT("write_addr: "); DEBUG_PRINTLN(flash_addr_rev_pixel);
+//          //DISPLAY_FLASH_DEBUG_PRINT("copy pixel data @ "); DISPLAY_FLASH_DEBUG_PRINTLN(pixel_count);
+//          //DISPLAY_FLASH_DEBUG_PRINT("read_addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr_org_piexl);
+//          //DISPLAY_FLASH_DEBUG_PRINT("write_addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr_rev_pixel);
 //        }
 //        else if (pixel_count > (line_count + width - 3)){ //
 //          flash.writeByte(flash_addr_rev_pixel, flash.readByte(flash_addr_org_piexl));
 //          flash.writeByte(flash_addr_rev_pixel + 1, flash.readByte(flash_addr_org_piexl + 1));
-//          //DEBUG_PRINT("copy pixel data @ "); DEBUG_PRINTLN(pixel_count);
-//          //DEBUG_PRINT("read_addr: "); DEBUG_PRINTLN(flash_addr_org_piexl);
-//          //DEBUG_PRINT("write_addr: "); DEBUG_PRINTLN(flash_addr_rev_pixel);
+//          //DISPLAY_FLASH_DEBUG_PRINT("copy pixel data @ "); DISPLAY_FLASH_DEBUG_PRINTLN(pixel_count);
+//          //DISPLAY_FLASH_DEBUG_PRINT("read_addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr_org_piexl);
+//          //DISPLAY_FLASH_DEBUG_PRINT("write_addr: "); DISPLAY_FLASH_DEBUG_PRINTLN(flash_addr_rev_pixel);
 //        }
 //        else{
-//          DEBUG_PRINT("need to calculate @ "); DEBUG_PRINTLN(pixel_count);
-//          DEBUG_PRINTLN(flash.readByte(flash_addr_org_piexl + 1)); DEBUG_PRINTLN(flash.readByte(flash_addr_org_piexl));
+//          DISPLAY_FLASH_DEBUG_PRINT("need to calculate @ "); DISPLAY_FLASH_DEBUG_PRINTLN(pixel_count);
+//          DISPLAY_FLASH_DEBUG_PRINTLN(flash.readByte(flash_addr_org_piexl + 1)); DISPLAY_FLASH_DEBUG_PRINTLN(flash.readByte(flash_addr_org_piexl));
 //          while(1);
 //        }
 //      }
@@ -616,6 +616,52 @@ uint8_t display_flash::read_one_byte_from_flash(uint32_t start_addr){
 
 /**************************************************************************/
 /*!
+    @brief  write flash, total available range is 0x0 -> 0x400, 1k bytes
+    @param  start_addr     start address
+    @param  byte_array     the data array to write
+    @param  length         total length in byte
+    @return 0: write success; non-0: write fail
+*/
+/**************************************************************************/
+bool display_flash::write_bytes_to_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length){
+  if (start_addr + length > data_size_max_byte){ //if last addr > 1k, then return error
+    return 1;
+  }
+  DISPLAY_FLASH_DEBUG_PRINT("start_addr = ");
+  DISPLAY_FLASH_DEBUG_PRINTLN(start_addr);
+  DISPLAY_FLASH_DEBUG_PRINT("length = ")
+  DISPLAY_FLASH_DEBUG_PRINTLN(length);
+  uint8_t data_buffer[data_size_max_byte];
+  read_bytes_from_flash(0, data_buffer, data_size_max_byte);
+  DISPLAY_FLASH_DEBUG_PRINTLN("data stored in flash:");
+  for(uint32_t counter = 0; counter < data_size_max_byte; counter++){
+    if (counter%50 == 0){DISPLAY_FLASH_DEBUG_PRINTLN("")};
+    DISPLAY_FLASH_DEBUG_PRINT("  ");
+    DISPLAY_FLASH_DEBUG_PRINT(data_buffer[counter]);
+  }
+  DISPLAY_FLASH_DEBUG_PRINTLN("");
+
+  flash.eraseSector(0); //erase first 4KB flash
+  for(uint32_t addr = 0; addr < length; addr++){
+    data_buffer[start_addr+addr]=byte_array[addr];
+  }
+
+  DISPLAY_FLASH_DEBUG_PRINTLN("data to write to flash:");
+  for(uint32_t counter = 0; counter < data_size_max_byte; counter++){
+    if (counter%50 == 0){DISPLAY_FLASH_DEBUG_PRINTLN("")};
+    DISPLAY_FLASH_DEBUG_PRINT("  ");
+    DISPLAY_FLASH_DEBUG_PRINT(data_buffer[counter]);
+  }
+  DISPLAY_FLASH_DEBUG_PRINTLN("");
+
+  bool result = flash.writeByteArray(0, data_buffer, data_size_max_byte);
+  DISPLAY_FLASH_DEBUG_PRINT("write result = ");
+  DISPLAY_FLASH_DEBUG_PRINTLN(result);
+  return 0;
+}
+
+/**************************************************************************/
+/*!
     @brief  earse flash from addr with length
     @param  start_addr     start address
     @param  length         total length in byte
@@ -625,10 +671,10 @@ bool display_flash::erase_flash(uint32_t start_addr, uint32_t length){
   uint32_t current_start_addr = start_addr;
   bool result = true;
   uint32_t erase_length = 0;
-//  DEBUG_PRINT("erase start addr: ");
-//  DEBUG_PRINTLN(start_addr);
-//  DEBUG_PRINT("size: ");
-//  DEBUG_PRINTLN(length);
+//  DISPLAY_FLASH_DEBUG_PRINT("erase start addr: ");
+//  DISPLAY_FLASH_DEBUG_PRINTLN(start_addr);
+//  DISPLAY_FLASH_DEBUG_PRINT("size: ");
+//  DISPLAY_FLASH_DEBUG_PRINTLN(length);
 //  while(1);
   while(length > 0){
     if(length >= 65536){
@@ -658,8 +704,8 @@ bool display_flash::erase_flash(uint32_t start_addr, uint32_t length){
     }
     current_start_addr += erase_length;
     length -= erase_length;
-//    DEBUG_PRINT("erase length remaining: ");
-//    DEBUG_PRINTLN(length);
+//    DISPLAY_FLASH_DEBUG_PRINT("erase length remaining: ");
+//    DISPLAY_FLASH_DEBUG_PRINTLN(length);
   }
   return result;
 }
