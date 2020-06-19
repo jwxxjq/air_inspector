@@ -5,21 +5,20 @@ TW07ST u_TW07ST;
 SERSOR_SERIAL u_SERSOR_SERIAL(3,2);
 bool flag_to_update_fig;
 display_flash u_display_flash;
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
+sensor_group u_sensor_value_group;
 
 void setup() {
   // put your setup code here, to run once:
   //display related
-/*  tft.begin();
-  tft.setRotation(1);
-  tft.fillScreen(ILI9341_BLACK);
-
-  //flash init
-  flash.begin();
-*/
   u_display_flash.init();
+  Serial.begin(BAUD_RATE);
+
   //sensor init
-  u_TW07ST.init();
+//  u_TW07ST.init();
 //  Serial.begin(9600); //TW07ST will init serial
+  sht31.begin(0x44); //SHT31 init
+  u_sensor_value_group.init();
 
   //set timer to update backgroud fig
   flag_to_update_fig = false;
@@ -58,18 +57,34 @@ void loop() {
       //update real value display
       while(!flag_to_update_fig){
         //Serial.println("waiting for sensor update");
-        if (u_TW07ST.update_value() && u_TW07ST.CO2_value != 0){
-          u_display_flash.update_item_value(i, item_number_CO2,  u_TW07ST.CO2_value);
-          u_display_flash.update_item_value(i, item_number_TVOC, u_TW07ST.TVOC_value);
-          u_display_flash.update_item_value(i, item_number_CH2O, u_TW07ST.CH2O_value);
-          u_display_flash.update_item_value(i, item_number_PM25, u_TW07ST.PM25_value);
-          u_display_flash.update_item_value(i, item_number_PM10, u_TW07ST.PM10_value);
-          u_display_flash.update_item_value(i, item_number_TEMP, u_TW07ST.TEMP_value*10);
-          u_display_flash.update_item_value(i, item_number_RH,   u_TW07ST.RH_value*10);
+          float t = sht31.readTemperature();
+          float h = sht31.readHumidity();
+          uint16_t temp = uint16_t (t*100);
+          uint16_t rh = uint16_t (h*100);
+          u_sensor_value_group.put_temp_rh_value(temp, rh);
+          u_sensor_value_group.calculate_average_value();
+          Serial.print("temp = ");
+          Serial.println(u_sensor_value_group.TEMP_value);
+          Serial.print("RH = ");
+          Serial.println(u_sensor_value_group.RH_value);
+
+          if (u_sensor_value_group.TEMP_value != 0 && u_sensor_value_group.RH_value != 0){
+            u_display_flash.update_item_value(i, item_number_TEMP, u_sensor_value_group.TEMP_value);
+            u_display_flash.update_item_value(i, item_number_RH, u_sensor_value_group.RH_value);
+          }
+          delay(1000);
+//        if (u_TW07ST.update_value() && u_TW07ST.CO2_value != 0){
+//          u_display_flash.update_item_value(i, item_number_CO2,  u_TW07ST.CO2_value);
+//          u_display_flash.update_item_value(i, item_number_TVOC, u_TW07ST.TVOC_value);
+//          u_display_flash.update_item_value(i, item_number_CH2O, u_TW07ST.CH2O_value);
+//          u_display_flash.update_item_value(i, item_number_PM25, u_TW07ST.PM25_value);
+//          u_display_flash.update_item_value(i, item_number_PM10, u_TW07ST.PM10_value);
+//          u_display_flash.update_item_value(i, item_number_TEMP, u_TW07ST.TEMP_value*10);
+//          u_display_flash.update_item_value(i, item_number_RH,   u_TW07ST.RH_value*10);
           //Serial.println("update sensor value done");
           //Serial.println(u_TW07ST.TEMP_value);
-          u_SERSOR_SERIAL.print_value(u_TW07ST.PM25_value, u_TW07ST.PM10_value, u_TW07ST.CO2_value, u_TW07ST.CH2O_value, u_TW07ST.TEMP_value, u_TW07ST.RH_value);
-        }
+//          u_SERSOR_SERIAL.print_value(u_TW07ST.PM25_value, u_TW07ST.PM10_value, u_TW07ST.CO2_value, u_TW07ST.CH2O_value, u_TW07ST.TEMP_value, u_TW07ST.RH_value);
+//        }
       }
       flag_to_update_fig = false;
       //tft.fillScreen(ILI9341_BLACK);

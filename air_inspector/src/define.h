@@ -6,6 +6,8 @@
 #include <FlexiTimer2.h>
 #include "SENSOR_SERIAL.h"
 #include "display_flash.h"
+#include "Adafruit_SHT31.h"
+#include "sensor_group.h"
 
 //Arduino peri define
 #define BAUD_RATE 9600 //for serial.print
