@@ -40,8 +40,8 @@
 #define item_number_RH 6
 
 //item limit
-#define item_stage_CO2_1 800   // <800PPM is green
-#define item_stage_CO2_2 1200  // 800-1200 is yellow; > 1200 is red
+#define item_stage_CO2_1 1200   // <1200 is green
+#define item_stage_CO2_2 2000  // 1200-2000 is yellow; >= 2000 is red
 
 #define item_stage_TVOC_1 300  // <300 ug/m^3 is green
 #define item_stage_TVOC_2 500  // 300-500 is yellow; > 500 is red
