@@ -41,6 +41,10 @@ lib necessary:
         flexitimer2
         
         Adafruit_SHT31
+        
+        MHZ19
+        
+        PMS
 
 STEPS:
 
