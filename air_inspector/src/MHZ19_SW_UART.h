@@ -10,12 +10,12 @@
 #define MHZ19_SW_UART_default_RX_pin 8
 #define MHZ19_init_time_mills 180000 //180s
 
-#define MHZ19_SW_UART_DEBUG
+//#define MHZ19_SW_UART_DEBUG
 /* Setup debug printing macros. */
-#define DEBUG_PRINTER Serial
+#define MHZ19_SW_UART_DEBUG_PRINTER Serial
 #ifdef MHZ19_SW_UART_DEBUG
-  #define MHZ19_SW_UART_DEBUG_PRINT(...) { DEBUG_PRINTER.print(__VA_ARGS__); }
-  #define MHZ19_SW_UART_DEBUG_PRINTLN(...) { DEBUG_PRINTER.println(__VA_ARGS__); }
+  #define MHZ19_SW_UART_DEBUG_PRINT(...) { MHZ19_SW_UART_DEBUG_PRINTER.print(__VA_ARGS__); }
+  #define MHZ19_SW_UART_DEBUG_PRINTLN(...) { MHZ19_SW_UART_DEBUG_PRINTER.println(__VA_ARGS__); }
 #else
   #define MHZ19_SW_UART_DEBUG_PRINT(...) {} /**< Debug Print Placeholder if Debug is disabled */
   #define MHZ19_SW_UART_DEBUG_PRINTLN(...) {} /**< Debug Print Line Placeholder if Debug is disabled */

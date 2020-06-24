@@ -9,6 +9,7 @@
 #include "Adafruit_SHT31.h"
 #include "sensor_group.h"
 #include "MHZ19_SW_UART.h"
+#include <PMS7003.h>
 
 //Arduino peri define
 #define BAUD_RATE 9600 //for serial.print

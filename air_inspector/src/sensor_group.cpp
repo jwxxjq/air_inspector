@@ -45,7 +45,14 @@ void sensor_group::put_CO2_value(uint16_t new_CO2_value){
 }
 
 void sensor_group::put_CH2O_value(uint16_t new_CH2O_value){}
-void sensor_group::put_dust_value(uint16_t new_PM25_value, uint16_t new_PM10_value){}
+void sensor_group::put_dust_value(uint16_t new_PM25_value, uint16_t new_PM10_value){
+  for(uint8_t i = sensor_buffer_length - 1; i > 0; i--){
+    PM25_value_list[i] = PM25_value_list[i-1];
+    PM10_value_list[i] = PM10_value_list[i-1];
+  }
+  PM25_value_list[0] = new_PM25_value;
+  PM10_value_list[0] = new_PM10_value;
+}
 
 /*!
  *  @brief  recalculate average values of all sensors'

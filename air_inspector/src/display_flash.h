@@ -10,7 +10,7 @@
 
 //pin define
 #define FLASH_CS_PIN 4 //define cs pin of flash
-#define TFT_DC 9 //TFT DC pin
+#define TFT_DC 16 //TFT DC pin A2
 #define TFT_CS 10 //TFT CS pin
 
 //flash addr part
