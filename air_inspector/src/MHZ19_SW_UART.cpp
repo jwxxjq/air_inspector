@@ -37,7 +37,6 @@ void MHZ19_SW_UART::init(){
 uint32_t MHZ19_SW_UART::read_CO2_value(){
   SoftwareSerial ss(RX_pin, TX_pin);
   ss.begin(MHZ19_SW_UART_RATE);
-  ss.write(0xff);
   MHZ19 mhz19(&ss);
   if (heating){
     heating = (millis() - lastInitTimestamp) < MHZ19_init_time_mills; //heat done after init time
