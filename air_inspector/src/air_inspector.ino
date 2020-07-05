@@ -9,6 +9,7 @@ display_flash u_display_flash;
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 sensor_group u_sensor_value_group;
 PMS7003_UART pms(14, 15);
+ZE08_CH2O u_ZE08(8,7); //5: RXM, 6: TXM
  
 void setup() {
   // put your setup code here, to run once:
@@ -23,6 +24,8 @@ void setup() {
   Serial.println("mhz19 init done");
   pms.init();
   Serial.println("pms init done");
+  u_ZE08.init();
+  Serial.println("ZE08_CH2O init done");
   u_sensor_value_group.init();
 
   //set timer to update backgroud fig
@@ -82,6 +85,7 @@ void loop() {
           u_display_flash.update_item_value(i, item_number_CO2, u_sensor_value_group.CO2_value);
           u_display_flash.update_item_value(i, item_number_PM25, u_sensor_value_group.PM25_value);
           u_display_flash.update_item_value(i, item_number_PM10, u_sensor_value_group.PM10_value);
+          u_display_flash.update_item_value(i, item_number_CH2O, u_sensor_value_group.CH2O_value);
         }
         //int temp = analogRead(7);
         //u_display_flash.update_item_value(i, item_number_CH2O, (uint16_t)temp);
@@ -113,20 +117,28 @@ void update_sensor_values(){
   u_sensor_value_group.put_temp_rh_value(temp, rh);
   
   //CO2
-  uint32_t CO2_value = mhz19_sw_uart.read_CO2_value();
-  Serial.print("CO2_value = ");
-  Serial.println(CO2_value);
-  if (CO2_value != 15000 && CO2_value != 0 && CO2_value != 0xffffffff){  //not 0 & 15000 & time_out
-    u_sensor_value_group.put_CO2_value(CO2_value);
-  }
+//  uint32_t CO2_value = mhz19_sw_uart.read_CO2_value();
+//  Serial.print("CO2_value = ");
+//  Serial.println(CO2_value);
+//  if (CO2_value != 15000 && CO2_value != 0 && CO2_value != 0xffffffff){  //not 0 & 15000 & time_out
+//    u_sensor_value_group.put_CO2_value(CO2_value);
+//  }
 
   //dust: PM2.5 & PM10
-  if (pms.update_dust_value()){
-    u_sensor_value_group.put_dust_value(pms.PM25_value,pms.PM10_value);
-    Serial.print("PM2.5 value = ");
-    Serial.println(pms.PM25_value);
-    Serial.print("PM10 value = ");
-    Serial.println(pms.PM10_value);
+//  if (pms.update_dust_value()){
+//    u_sensor_value_group.put_dust_value(pms.PM25_value,pms.PM10_value);
+//    Serial.print("PM2.5 value = ");
+//    Serial.println(pms.PM25_value);
+//    Serial.print("PM10 value = ");
+//    Serial.println(pms.PM10_value);
+//  }
+
+  //CH2O
+  uint16_t CH2O_value = u_ZE08.read_CH2O_value();
+  Serial.print("CH2O value = ");
+  Serial.println(CH2O_value);
+  if (CH2O_value != 0){  //heating return 0x0
+    u_sensor_value_group.put_CH2O_value(CH2O_value);
   }
 
   u_sensor_value_group.calculate_average_value();
