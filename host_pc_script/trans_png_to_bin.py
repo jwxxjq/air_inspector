@@ -52,7 +52,7 @@ for fig_number in range(0, max_fig_number, 1):
     if (display_item_count == 0):
       position_y[fig_number, display_item_count] = 0
     elif (display_item_count != 6):
-      position_y[fig_number, display_item_count] = (display_item_count)*2*display_line_high
+      position_y[fig_number, display_item_count] = (display_item_count-1)*2*display_line_high # (-1) to skip TVOC
     else:
       position_y[fig_number, display_item_count] = position_y[fig_number, display_item_count - 1] + display_line_high
 #    print ("x = ", position_x[fig_number, display_item_count])
@@ -61,24 +61,24 @@ for fig_number in range(0, max_fig_number, 1):
 
 #could update place display item here, point the left^top position
 #fig4.png
-position_x[4, 0] = 0
-position_y[4, 0] = 40
-
-position_x[4, 1] = 0
-position_y[4, 1] = 0
+#position_x[4, 0] = 0
+#position_y[4, 0] = 40
+#
+#position_x[4, 1] = 0
+#position_y[4, 1] = 0
 
 #fig6.png
-position_x[6] = (fig_width - display_item_width_num, fig_width - display_item_width_num, fig_width - display_item_width_num,
-                 fig_width - display_item_width_num, fig_width - display_item_width_num, fig_width - display_item_width_2,
-                 fig_width - display_item_width_2)
+#position_x[6] = (fig_width - display_item_width_num, fig_width - display_item_width_num, fig_width - display_item_width_num,
+#                 fig_width - display_item_width_num, fig_width - display_item_width_num, fig_width - display_item_width_2,
+#                 fig_width - display_item_width_2)
 
 #fig8.png
-position_x[8] = (0, 110, 220, 0,  220, 0,   260)
-position_y[8] = (0, 0,   0,   60, 60,  100, 100)
+#position_x[8] = (0, 110, 220, 0,  220, 0,   260)
+#position_y[8] = (0, 0,   0,   60, 60,  100, 100)
 
 #fig9.png
-position_x[9] = (0,   110, 220, 0,   110, 0,   60)
-position_y[9] = (200, 200, 200, 160, 160, 140, 140)
+#position_x[9] = (0,   110, 220, 0,   110, 0,   60)
+#position_y[9] = (200, 200, 200, 160, 160, 140, 140)
 
 #position_x[0, 5] = 150
 #position_x[0, 6] = 200
@@ -131,6 +131,8 @@ def mix_color_for_pixel(orginal_pixel, char_lib_pixel, char_lib_color):
 def fill_in_display_item_name(fig, char_lib, char_lib_color, fig_position_y, fig_position_x):
   result = fig
   for display_item_count in range(0, display_item_num - 2, 1): # temp & rh no need
+    if (display_item_count == 1):
+      continue #skip TVOC
     for y in range (0, display_line_high - char_lib_offset_y, 1):
       for x in range (0, display_item_width_1 - char_lib_offset_x, 1):
         char_lib_y = char_lib_each_item_high * display_item_count + y
@@ -156,6 +158,8 @@ def fill_in_display_item_unit(fig, char_lib, char_lib_color, fig_position_y, fig
           orginal_fig_x = x + char_lib_offset_x + char_lib_number_width * 4 + char_lib_number_offset_x + fig_position_x[display_item_count]
           result[orginal_fig_y, orginal_fig_x] = mix_color_for_pixel(result[orginal_fig_y, orginal_fig_x], char_lib[char_lib_y, char_lib_x], char_lib_color)
     else: #other use ug/m^3
+      if (display_item_count == 1):
+        continue #skip TVOC
       for y in range (0, display_line_high - char_lib_offset_y, 1):
         for x in range (0, char_lib_uint_width_1, 1):
           char_lib_y = char_lib_each_item_high * 5 + y
@@ -188,6 +192,8 @@ def fill_in_test_number(fig, char_lib, fig_position_y, fig_position_x):
   display_color = char_lib_color_green
   is_blod = 0
   for display_item_count in range(0, display_item_num - 2, 1): #not for temp & rh
+    if (display_item_count == 1):
+      continue #skip TVOC
     if (display_item_count % 2 == 0):
       is_blod = 0
     else:
@@ -287,6 +293,8 @@ for fig_number in range(0, max_fig_number, 1):
 
   for display_item_count in range(0, display_item_num, 1):
     if (display_item_count < 5): #first 5 items need two lines, second is 90 width
+      if (display_item_count == 1):
+        continue #skip TVOC
       fig_display_area = draw_white(fig_display_area, position_x[fig_number, display_item_count], position_y[fig_number, display_item_count], display_item_width_1, display_line_high)
       fig_display_area = draw_white(fig_display_area, position_x[fig_number, display_item_count], (position_y[fig_number, display_item_count] + display_line_high), display_item_width_num, display_line_high)
     else:
