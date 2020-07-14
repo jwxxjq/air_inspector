@@ -60,7 +60,7 @@ void loop() {
       u_display_flash.update_one_fig(i);
       //set default to all-zeros
       u_display_flash.update_item_value(i, item_number_CO2,  0);
-      u_display_flash.update_item_value(i, item_number_TVOC, 0);
+      //u_display_flash.update_item_value(i, item_number_TVOC, 0);
       u_display_flash.update_item_value(i, item_number_CH2O, 0);
       u_display_flash.update_item_value(i, item_number_PM25, 0);
       u_display_flash.update_item_value(i, item_number_PM10, 0);
