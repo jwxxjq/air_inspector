@@ -38,13 +38,15 @@ lib necessary:
         
         Adafruit_GFX_Library
         
-        flexitimer2
-        
         Adafruit_SHT31
         
         MHZ19
         
         PMS
+        
+PCB projcet:
+
+    https://oshwhub.com/jwxxjq/air_inspector
 
 STEPS:
 
