@@ -5,7 +5,7 @@
 #define ZE08_CH2O_SW_UART_RATE 9600
 #define ZE08_CH2O_SW_UART_default_TX_pin 7 //5
 #define ZE08_CH2O_SW_UART_default_RX_pin 8 //6
-#define ZE08_CH2O_init_time_mills 30000 //30s
+#define ZE08_CH2O_init_time_mills 180000 //180s
 
 //#define ZE08_CH2O_SW_UART_DEBUG
 /* Setup debug printing macros. */
