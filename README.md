@@ -58,7 +58,7 @@ STEPS:
     
     C. edit host_pc_script/uart_write.py
     
-        a. COM port @ lien 25
+        a. COM port @ line 25
     
         b. baud rate @ line 27 (should match step D)
     
