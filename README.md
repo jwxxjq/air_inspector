@@ -52,43 +52,35 @@ STEPS:
 
 1. write fig data into flash
 
-    A. prepare figx.png (must be 240*320), x start with 0
+    A. prepare fig0~9.png (must be 240*320)
   
-    B. edit host_pc_script/trans_png_to_bin.py
-  
-        a. update file name @ line 8
-        
-        b. edit default value for display area @ line 62 if needed
-    
-        b. excute this script, then get figx.bin
+    B. excute host_pc_script/trans_png_to_bin.py, output figx.bin
     
     C. edit host_pc_script/uart_write.py
-  
-        a. fig name @ line 7
     
-        b. COM port @ lien 25
+        a. COM port @ lien 25
     
-        c. baud rate @ line 27
+        b. baud rate @ line 27 (should match step D)
     
-        d. do not excute right now
+        c. do not excute right now
   
     D. edit uart_write_flash/uart_write_flash.ino
   
-        a. BAUD_TATE @ line 6
+        a. BAUD_TATE @ line 6 (should match step C above)
     
-        b. FLASH cs pin @ line 7
+        b. load into MCU
     
-        c. update fig_addr @ lien 16
-    
-        d. load into MCU
-    
-        e. then excute host_pc_script/uart_write.py, wait all lines finish
+        c. then excute host_pc_script/uart_write.py, wait all lines finish
     
     E. if checksum error happens, may need to slow down the baud rate
   
- 
-2. test display fig
+2. load main program to MCU
 
     A. load air_inspector/air_inspector.ino to MCU
     
-    B. should display figs in turns with the values of every test items update and refrush randomly.
+3. flash ESP8266 with this version: https://github.com/jwxxjq/ESPEasy
+
+    A. select Environment - custom_sensor in Devices page, RX pin: 3, TX pin: 1
+    
+    B. other settings same with orginal ESPEasy(https://github.com/letscontrolit/ESPEasy) (like MQTT or others)
+
