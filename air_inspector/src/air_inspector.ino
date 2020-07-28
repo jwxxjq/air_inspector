@@ -34,13 +34,10 @@ void setup() {
   //set timer to update backgroud fig
   flag_to_update_fig = false;
   last_update_fig_time = millis();
-//  Serial.print("init fig time: ");
-//  Serial.println(last_update_fig_time);
-//  FlexiTimer2::set(time_each_fig_ms, 1.0/1000, set_update_fig_flag);
-//  FlexiTimer2::start();
- 
-  digitalWrite(9, HIGH);
-//  LED_PWM_timer1_init();
+  Serial.println(last_update_fig_time);
+
+  //init timer1 for LED_PWM control
+  LED_PWM_timer1_init();
 }
 
 void loop() {
@@ -86,8 +83,18 @@ void loop() {
         check_if_update_fig();
         update_sensor_values();
 
-//        update_LED_PWM_level();
-        delay(3000);
+        unsigned long enter_delay_time = millis();
+        while(1){
+          update_LED_PWM_level();
+          delay(1000);
+          if (enter_delay_time + sensor_read_delay_ms < millis()){
+            //AIR_INSPECTOR_UART_DEBUG_PRINTLN(enter_delay_time + sensor_read_delay_ms);
+            break;
+          }
+          else if (enter_delay_time > millis()){
+            break; //directly break when millis() return to 0x0
+          }
+        }
       }
       flag_to_update_fig = false;
       //tft.fillScreen(ILI9341_BLACK);
@@ -96,19 +103,14 @@ void loop() {
 }
 
 void set_update_fig_flag(){
-  //Serial.print("print message: Called at: ");
-  //Serial.println(millis());
-  //Serial.println("update one fig");
   flag_to_update_fig = true;
 }
 
 void check_if_update_fig(){
 //  Serial.println("in check function");
   unsigned long this_time = millis();
-//  Serial.println("this time:");
-//  Serial.println(this_time);
-//  Serial.println("last time:");
-//  Serial.println(last_update_fig_time);
+  //AIR_INSPECTOR_UART_DEBUG_PRINTLN(this_time);
+  //AIR_INSPECTOR_UART_DEBUG_PRINTLN(last_update_fig_time);
   if (this_time - last_update_fig_time > time_each_fig_ms){
     set_update_fig_flag();
     last_update_fig_time = this_time;
@@ -127,7 +129,7 @@ void update_sensor_values(){
   uint16_t rh = uint16_t (h*100);
   u_sensor_value_group.put_temp_rh_value(temp, rh);
   
-  delay(500);
+  //delay(500);
   //CO2
   //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start CO2");
   uint32_t CO2_value = mhz19_sw_uart.read_CO2_value();
@@ -180,13 +182,24 @@ void sensor_power_off(){
 //timer init for LED_PWM
 void LED_PWM_timer1_init(){
   pinMode(9, OUTPUT);
-  TCCR1A = 0;
-  TCCR1B = 0;
-  TCCR1B |= (1 << CS10) | (1 << WGM12); // CS10 -- prescaler 1, WGM12 -- CTC mode
-  TIMSK1 = 0;
-  TIMSK1 |= (1 << OCIE1A) | (1 << OCIE1B); // OCIE1A -- OCR1A, OCIE1B -- OCR1B
-  OCR1A = MCU_xtal_freq / LED_PWA_freq - 1; // set OCR1A value, which return 0 in next cycle, change PB9 to high
-  OCR1B = MCU_xtal_freq / LED_PWA_freq / 100 * 50 - 1; // set OCR1B, this will change PB9 to low, default set to 50%
+
+  #ifdef disable_LED_PWM
+    digitalWrite(9, HIGH);
+    AIR_INSPECTOR_UART_DEBUG_PRINTLN("LED_PWM disabled");
+  #else
+    #ifdef use_HW_LED_PWM
+      analogWrite(9, 255);
+      AIR_INSPECTOR_UART_DEBUG_PRINTLN("USE HW PWM");
+    #else
+      TCCR1A = 0;
+      TCCR1B = 0;
+      TCCR1B |= (1 << CS10) | (1 << WGM12); // CS10 -- prescaler 1, WGM12 -- CTC mode
+      TIMSK1 = 0;
+      TIMSK1 |= (1 << OCIE1A) | (1 << OCIE1B); // OCIE1A -- OCR1A, OCIE1B -- OCR1B
+      OCR1A = MCU_xtal_freq / LED_PWA_freq - 1; // set OCR1A value, which return 0 in next cycle, change PB9 to high
+      OCR1B = MCU_xtal_freq / LED_PWA_freq / 100 * 50 - 1; // set OCR1B, this will change PB9 to low, default set to 50%
+    #endif
+  #endif
 }
 
 //change LED PWM cycle
@@ -204,23 +217,35 @@ ISR(TIMER1_COMPA_vect) {
 ISR(TIMER1_COMPB_vect) {
   PORTB &= B11111101; // pin 9 set LOW
 }
-void update_LED_PWM_level(){
-  int temp = analogRead(6);
-  AIR_INSPECTOR_UART_DEBUG_PRINT("light: ");
-  AIR_INSPECTOR_UART_DEBUG_PRINTLN(temp);
 
-  uint8_t index = 0;
-  uint8_t index_max = sizeof(LED_light_in_threshold)/sizeof(LED_light_in_threshold[0]);
-  for(index = 0; index < index_max; index++){
-    if (temp > LED_light_in_threshold[index]){
-      continue;
+void update_LED_PWM_level(){
+  #ifdef disable_LED_PWM
+    digitalWrite(9, HIGH);
+  #else
+    int temp = analogRead(6);
+    AIR_INSPECTOR_UART_DEBUG_PRINT("light: ");
+    AIR_INSPECTOR_UART_DEBUG_PRINTLN(temp);
+
+    uint8_t index = 0;
+    uint8_t index_max = sizeof(LED_light_in_threshold)/sizeof(LED_light_in_threshold[0]);
+    //AIR_INSPECTOR_UART_DEBUG_PRINTLN(index_max);
+    for(index = 0; index < index_max; index++){
+      int threhold_value = LED_light_in_threshold[index]<<2;
+      if (temp > threhold_value){
+        continue;
+      }
+      else{
+        //AIR_INSPECTOR_UART_DEBUG_PRINTLN(index);
+        break;
+      }
     }
-    else{
-      break;
-    }
-  }
-  AIR_INSPECTOR_UART_DEBUG_PRINT("set LED_PWM to level");
-  AIR_INSPECTOR_UART_DEBUG_PRINTLN(index);
-  //LED_PWM_set(LED_birghtness[index]);
-  digitalWrite(9, HIGH); //disable LED_PWM due to sw serial conflict
+    AIR_INSPECTOR_UART_DEBUG_PRINT("set LED_PWM to level");
+    AIR_INSPECTOR_UART_DEBUG_PRINTLN(index);
+
+    #ifdef use_HW_LED_PWM
+      analogWrite(9, LED_birghtness[index]);
+    #else
+      LED_PWM_set(LED_birghtness[index]);
+    #endif
+  #endif
 }

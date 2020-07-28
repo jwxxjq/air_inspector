@@ -27,6 +27,7 @@
 #define char_lib_high 200
 #define char_lib_start_addr 0x1FB000 //0x1f_b000~0x1f_fb00
 
+//#define DISPLAY_FLASH_DISABLE_WRITE
 #define data_size_max_byte 1024 //max size for data size in flash
 
 //test item number define
@@ -201,7 +202,9 @@ class display_flash {
     void update_item_value(uint8_t fig_num, uint8_t item_count, uint16_t value);
     void read_bytes_from_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length);
     uint8_t read_one_byte_from_flash(uint32_t start_addr);
-    bool write_bytes_to_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length);
+    #ifndef DISPLAY_FLASH_DISABLE_WRITE
+      bool write_bytes_to_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length);
+    #endif
   private:
     SPIFlash flash = SPIFlash(FLASH_CS_PIN);
     Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);

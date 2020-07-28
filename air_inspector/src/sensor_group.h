@@ -2,14 +2,7 @@
 #define SENSOR_GROUP_H_
 #include "Arduino.h"
 
-#ifndef max_7
-  #define max_7(A,B,C,D,E,F,G) max(A, max(B, max(C, max(D, max(E, max(F, G))))))
-#endif
-#ifndef min_7
-  #define min_7(A,B,C,D,E,F,G) min(A, min(B, min(C, min(D, min(E, min(F, G))))))
-#endif
-
-#define sensor_buffer_length 7
+#define sensor_buffer_length 6
 
 #define SENSOR_GROUP_DEBUG_PRINTER Serial
 

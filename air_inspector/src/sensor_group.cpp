@@ -113,7 +113,7 @@ uint16_t sensor_group::get_average_data(uint16_t* input_data){
     SENSOR_GROUP_DEBUG_PRINT("  ");
   }
   result = result - input_max - input_min;
-  result = result/5;
+  result = result/(sensor_buffer_length-2);
   SENSOR_GROUP_DEBUG_PRINTLN("average function end");
   return result;
 }

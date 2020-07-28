@@ -623,6 +623,7 @@ uint8_t display_flash::read_one_byte_from_flash(uint32_t start_addr){
     @return 0: write success; non-0: write fail
 */
 /**************************************************************************/
+#ifndef DISPLAY_FLASH_DISABLE_WRITE
 bool display_flash::write_bytes_to_flash(uint32_t start_addr, uint8_t* byte_array, uint32_t length){
   if (start_addr + length > data_size_max_byte){ //if last addr > 1k, then return error
     return 1;
@@ -659,6 +660,7 @@ bool display_flash::write_bytes_to_flash(uint32_t start_addr, uint8_t* byte_arra
   DISPLAY_FLASH_DEBUG_PRINTLN(result);
   return 0;
 }
+#endif
 
 /**************************************************************************/
 /*!
