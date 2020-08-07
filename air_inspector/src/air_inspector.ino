@@ -4,13 +4,15 @@
 //TW07ST u_TW07ST;
 SERSOR_SERIAL u_SERSOR_SERIAL(3,2);
 MHZ19_SW_UART mhz19_sw_uart(8,7);
-bool flag_to_update_fig;
 display_flash u_display_flash;
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 sensor_group u_sensor_value_group;
 PMS7003_UART pms(14, 15);
 ZE08_CH2O u_ZE08(5,6); //5: RXM, 6: TXM
+
 unsigned long last_update_fig_time;
+bool flag_to_update_fig; //set ture when need to update fig; set to false when one fig is updated
+bool sensor_enable;
 
 void setup() {
   // put your setup code here, to run once:
@@ -35,6 +37,9 @@ void setup() {
   flag_to_update_fig = false;
   last_update_fig_time = millis();
   Serial.println(last_update_fig_time);
+
+  //set sensor enable
+  sensor_enable = true;
 
   //init timer1 for LED_PWM control
   LED_PWM_timer1_init();
@@ -83,18 +88,8 @@ void loop() {
         check_if_update_fig();
         update_sensor_values();
 
-        unsigned long enter_delay_time = millis();
-        while(1){
-          update_LED_PWM_level();
-          delay(1000);
-          if (enter_delay_time + sensor_read_delay_ms < millis()){
-            //AIR_INSPECTOR_UART_DEBUG_PRINTLN(enter_delay_time + sensor_read_delay_ms);
-            break;
-          }
-          else if (enter_delay_time > millis()){
-            break; //directly break when millis() return to 0x0
-          }
-        }
+        wait_next_sensor_update(); //delay time here
+        update_sensor_enable();
       }
       flag_to_update_fig = false;
       //tft.fillScreen(ILI9341_BLACK);
@@ -102,10 +97,78 @@ void loop() {
   }
 }
 
+//read enable pin to init / disable sensor
+void update_sensor_enable(){
+  int temp = analogRead(7);
+
+  if (temp > 1000){ //enable pin pull high
+    if (sensor_enable){
+      //enable -> enable, do nothing
+      sensor_enable = true;
+    }
+    else{
+      //disable -> enable, turn on sensor
+      sensor_enable = true;
+      sensor_power_on();
+      delay(10);
+
+      pms.wakeup();
+      mhz19_sw_uart.init();
+      u_ZE08.init();
+      //AIR_INSPECTOR_UART_DEBUG_PRINTLN("sensor wakeup done");
+    }
+  }
+  else{
+    if (sensor_enable){
+      //enable -> disable, enter low power
+      sensor_enable = false;
+      //turn off sensor power
+      sensor_power_off();
+      pms.sleep(); //set pms into sleep
+      //delay(10);
+      //AIR_INSPECTOR_UART_DEBUG_PRINTLN("enter low power mode done");
+    }
+    else{
+      //disable -> disable, do nothing
+      sensor_enable = false;
+    }
+  }
+}
+//sensor enable set
+void sensor_power_on(){
+  pinMode(17, OUTPUT);
+  digitalWrite(17, HIGH);
+}
+
+void sensor_power_off(){
+  pinMode(17, OUTPUT);
+  digitalWrite(17, LOW);
+}
+
+//delay time for sensor update
+//should adjust LED_PWM inside
+void wait_next_sensor_update(){
+  unsigned long enter_delay_time = millis();
+  while(1){
+    update_LED_PWM_level();
+    delay(500);
+    unsigned long this_time = millis();
+    if (enter_delay_time + sensor_read_delay_ms < this_time){
+      //AIR_INSPECTOR_UART_DEBUG_PRINTLN(enter_delay_time + sensor_read_delay_ms);
+      break;
+    }
+    else if (enter_delay_time > this_time){
+      break; //directly break when millis() return to 0x0
+    }
+  }
+}
+
+//set update flag to ture
 void set_update_fig_flag(){
   flag_to_update_fig = true;
 }
 
+//check time duration for update fig
 void check_if_update_fig(){
 //  Serial.println("in check function");
   unsigned long this_time = millis();
@@ -129,35 +192,40 @@ void update_sensor_values(){
   uint16_t rh = uint16_t (h*100);
   u_sensor_value_group.put_temp_rh_value(temp, rh);
   
-  //delay(500);
-  //CO2
-  //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start CO2");
-  uint32_t CO2_value = mhz19_sw_uart.read_CO2_value();
-  AIR_INSPECTOR_UART_DEBUG_PRINT("CO2_value = ");
-  AIR_INSPECTOR_UART_DEBUG_PRINTLN(CO2_value);
-  if (CO2_value != 15000 && CO2_value != 0 && CO2_value != 0xffffffff){  //not 0 & 15000 & time_out
-    u_sensor_value_group.put_CO2_value(CO2_value);
+  if (sensor_enable) {
+    //delay(500);
+    //CO2
+    //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start CO2");
+    uint32_t CO2_value = mhz19_sw_uart.read_CO2_value();
+    AIR_INSPECTOR_UART_DEBUG_PRINT("CO2_value = ");
+    AIR_INSPECTOR_UART_DEBUG_PRINTLN(CO2_value);
+    if (CO2_value != 15000 && CO2_value != 0 && CO2_value != 0xffffffff){  //not 0 & 15000 & time_out
+      u_sensor_value_group.put_CO2_value(CO2_value);
+    }
+  
+    delay(500);
+    //dust: PM2.5 & PM10
+    //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start dust");
+    if (pms.update_dust_value()){
+      u_sensor_value_group.put_dust_value(pms.PM25_value,pms.PM10_value);
+      AIR_INSPECTOR_UART_DEBUG_PRINT("PM2.5 value = ");
+      AIR_INSPECTOR_UART_DEBUG_PRINTLN(pms.PM25_value);
+      AIR_INSPECTOR_UART_DEBUG_PRINT("PM10 value = ");
+      AIR_INSPECTOR_UART_DEBUG_PRINTLN(pms.PM10_value);
+    }
+  
+    delay(500);
+    //CH2O
+    //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start CH2O");
+    uint16_t CH2O_value = u_ZE08.read_CH2O_value();
+    AIR_INSPECTOR_UART_DEBUG_PRINT("CH2O value = ");
+    AIR_INSPECTOR_UART_DEBUG_PRINTLN(CH2O_value);
+    if (CH2O_value != 0){  //heating return 0x0
+      u_sensor_value_group.put_CH2O_value(CH2O_value);
+    }
   }
-
-  delay(500);
-  //dust: PM2.5 & PM10
-  //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start dust");
-  if (pms.update_dust_value()){
-    u_sensor_value_group.put_dust_value(pms.PM25_value,pms.PM10_value);
-    AIR_INSPECTOR_UART_DEBUG_PRINT("PM2.5 value = ");
-    AIR_INSPECTOR_UART_DEBUG_PRINTLN(pms.PM25_value);
-    AIR_INSPECTOR_UART_DEBUG_PRINT("PM10 value = ");
-    AIR_INSPECTOR_UART_DEBUG_PRINTLN(pms.PM10_value);
-  }
-
-  delay(500);
-  //CH2O
-  //AIR_INSPECTOR_UART_DEBUG_PRINTLN("start CH2O");
-  uint16_t CH2O_value = u_ZE08.read_CH2O_value();
-  AIR_INSPECTOR_UART_DEBUG_PRINT("CH2O value = ");
-  AIR_INSPECTOR_UART_DEBUG_PRINTLN(CH2O_value);
-  if (CH2O_value != 0){  //heating return 0x0
-    u_sensor_value_group.put_CH2O_value(CH2O_value);
+  else{
+    AIR_INSPECTOR_UART_DEBUG_PRINTLN("sensor disabled");
   }
 
   u_sensor_value_group.calculate_average_value();
@@ -166,17 +234,6 @@ void update_sensor_values(){
                               u_sensor_value_group.CO2_value, u_sensor_value_group.CH2O_value,
                               u_sensor_value_group.TEMP_value, u_sensor_value_group.RH_value);
 
-}
-
-//sensor enable set
-void sensor_power_on(){
-  pinMode(17, OUTPUT);
-  digitalWrite(17, HIGH);
-}
-
-void sensor_power_off(){
-  pinMode(17, OUTPUT);
-  digitalWrite(17, LOW);
 }
 
 //timer init for LED_PWM
@@ -223,8 +280,8 @@ void update_LED_PWM_level(){
     digitalWrite(9, HIGH);
   #else
     int temp = analogRead(6);
-    AIR_INSPECTOR_UART_DEBUG_PRINT("light: ");
-    AIR_INSPECTOR_UART_DEBUG_PRINTLN(temp);
+    //AIR_INSPECTOR_UART_DEBUG_PRINT("light: ");
+    //AIR_INSPECTOR_UART_DEBUG_PRINTLN(temp);
 
     uint8_t index = 0;
     uint8_t index_max = sizeof(LED_light_in_threshold)/sizeof(LED_light_in_threshold[0]);
@@ -239,8 +296,8 @@ void update_LED_PWM_level(){
         break;
       }
     }
-    AIR_INSPECTOR_UART_DEBUG_PRINT("set LED_PWM to level");
-    AIR_INSPECTOR_UART_DEBUG_PRINTLN(index);
+    //AIR_INSPECTOR_UART_DEBUG_PRINT("set LED_PWM to level");
+    //AIR_INSPECTOR_UART_DEBUG_PRINTLN(index);
 
     #ifdef use_HW_LED_PWM
       analogWrite(9, LED_birghtness[index]);

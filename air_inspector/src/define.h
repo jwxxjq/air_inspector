@@ -30,7 +30,8 @@
 #endif
 
 //fig fresh rate
-#define time_each_fig_ms 180000 //30*60*1000ms
+#define time_each_fig_ms 1800000 //30*60*1000ms
+//#define time_each_fig_ms 18000 //30*60*1000ms
 
 //sensor value update rate
 #define sensor_read_delay_ms 10000 //10*1000ms
@@ -41,7 +42,8 @@
 #ifndef use_HW_LED_PWM
   const uint8_t LED_birghtness[7] = {10, 20, 30, 40, 50, 70, 99}; //100 level
 #else
-  const uint8_t LED_birghtness[7] = {40, 80, 130, 160, 190, 230, 255}; //255 level for HW PWM
+//  const uint8_t LED_birghtness[7] = {40, 80, 130, 160, 190, 230, 255}; //255 level for HW PWM
+  const uint8_t LED_birghtness[7] = {90, 95, 100, 105, 110, 115, 150}; //255 level for HW PWM
 #endif
 const uint8_t LED_light_in_threshold[6] = {40, 60, 75, 100, 125, 150}; //*4 to convert to 0~1023
 
