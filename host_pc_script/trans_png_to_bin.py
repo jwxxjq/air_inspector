@@ -11,7 +11,7 @@ fig_width = 320
 display_item_num = 7
 display_line_high = 20
 display_item_alpha = 0.4
-display_item_width_1 = 50 #for items with two lines, the width of first line
+display_item_width_1 = 52 #for items with two lines, the width of first line
 display_item_width_2 = 60 #for items only one line (temp & rh)
 display_item_width_num = 97 #for item number line width
 
