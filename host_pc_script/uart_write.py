@@ -24,7 +24,7 @@ def caculate_sum(data):
 try:
   portx="COM7"
 #  bps=9600
-  bps=57600
+  bps=76800
   timex=5
   ser=serial.Serial(portx,bps,timeout=timex)
   print ("open serial ok")

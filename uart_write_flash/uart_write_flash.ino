@@ -3,7 +3,7 @@
 #define fig_width 320
 #define fig_high 240
 #define BAUD_RATE 9600 //for serial.print
-#define TRANS_BAUD_RATE 57600 //for softSerial
+#define TRANS_BAUD_RATE 76800 //for softSerial
 #define FLASH_CS 4 //define cs pin of flash
 //#define fig_byte_number fig_high*fig_width*2 //r5g6b5, each pixel occupy 2 byte, 153600 bytes for 240*320*2
 #define fig_byte_number 153664
